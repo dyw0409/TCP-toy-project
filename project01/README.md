@@ -3,7 +3,9 @@
 - python의 socket모듈을 활용한 1대1 TCP기반 채팅 프로그램
 - client를 시작으로 server와 메시지를 주고 받음
 - end 입력시  종료
-- ![image](https://github.com/user-attachments/assets/a7eeee17-7e4f-42fd-895b-a0a310e3cac0)
-- ![image](https://github.com/user-attachments/assets/c8f9b5be-128a-4352-959e-552bff44cb65)
+- ![image](https://github.com/user-attachments/assets/4629aaf8-719b-47dd-ba91-23cee6339a6e)
+
+- ![image](https://github.com/user-attachments/assets/2d10b31f-306d-4a7a-8b00-559f41a8ec4a)
+
 
 
