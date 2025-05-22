@@ -1,0 +1,62 @@
+import socket
+
+#파일 불러오는 함수
+def load_words(filename="words.txt"):
+  word_list=[]
+  try: 
+    with open(filename, "r", encoding="utf-8") as file:
+      for line in file:
+        word_list.append(line.strip())
+  except: 
+    pass 
+  return word_list
+
+word_list = load_words()
+
+c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+c.connect(('localhost', 3033))
+print("서버에 연결되었습니다.")
+msg = c.recv(1024).decode()
+print(msg)
+
+start = c.recv(1024).decode()
+print("시작 단어 >> ",start)
+
+msg=start
+user_words=[]
+
+while True:
+  data = input(">> ")
+  if not data:
+    print("단어를 입력해주세요.")
+    continue
+
+  if data == "exit":
+    print("게임이 종료되었습니다.")
+    break
+
+  end_char = msg[-1]
+
+  if data[0] != end_char :
+    print("잘못된 단어입니다. 다시 입력해주세요.")
+    continue
+
+  if  data not in word_list:
+    print("사전에 없는 단어가 입니다. 다시 입력해주세요.")
+    continue
+  
+  if data in user_words:
+    print("이전에 사용한 단어입니다. 다시 입력해주세요.")
+    continue
+
+  user_words.append(data)
+  c.sendall(data.encode())
+  msg = c.recv(1024).decode()
+
+  if msg == "게임종료":
+    print("서버가 단어 매칭에 실패하였습니다. 게임이 종료되었습니다.")
+    break
+
+  print("받은 메시지>> ", msg)
+
+c.close()
