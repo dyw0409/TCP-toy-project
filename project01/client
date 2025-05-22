@@ -1,0 +1,16 @@
+import socket
+
+c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)#소켓 생성
+c.connect(('localhost', 3033))#서버에 연결 요청
+print("서버에 연결되었습니다.")
+
+while True:
+  msg = input(">> ")
+  c.sendall(msg.encode())
+  if msg == "end":
+    break
+
+  server_msg = c.recv(1024).decode()
+  print("서버가 보낸 말:",server_msg)
+
+c.close()
