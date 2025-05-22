@@ -1,0 +1,18 @@
+import socket
+from datetime import datetime
+
+c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)#소켓 생성
+c.connect(('localhost', 3033))#서버에 연결 요청
+print("서버에 연결되었습니다.")
+
+print(c.recv(1024).decode())
+
+id = input("학번 입력>> ")
+name = input("이름 입력>> ")
+time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+data = ",".join([id,name,time])
+c.sendall(data.encode())
+
+print(c.recv(1024).decode())
+
+c.close()
