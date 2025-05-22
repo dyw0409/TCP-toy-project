@@ -1,0 +1,40 @@
+#소켓 : 네트워크에서 두 컴퓨터 간 통신을 가능하게 해주는 통신 구멍
+
+#TCP UDP 공통전용 함수
+#socket() 소켓 생성 
+#bind():ip주소,포트 할당당
+
+#TCP 전용 함수
+#listen(): 클라이언트 연결대기
+#accept():클라이언트 연결수락 
+#connect():서버에게 연결 요청
+#sendall(): 데이터 전송
+#recv(): 데이터 받음
+
+#addr : 클라이언트 주소 알고 싶을 때 사용(ip,포트 번호)
+#인코딩 : 전송시 사용(문자열-> 바이트로)
+#디코딩 : 받을때 사용(바이트->문자열로)
+
+import socket;
+
+s= socket.socket(socket.AF_INET, socket.SOCK_STREAM) #소켓 생성(ipv4를 쓰고, TCP 통신을 하겠다).
+s.bind(('localhost', 3033)) #ip주소,포트 할당
+s.listen(1) #클라이언트 대기
+print("클라이언트 기다리는 중...")
+
+client_socket, addr = s.accept() #접속 클라이언트에 대해 새소켓과 객체와 주소 튜플 생성
+print("연결된 클라이언트 : ",addr)
+
+while True:
+  msg = client_socket.recv(1024).decode()
+  print("클라이언트가 보낸 말 :",msg)
+  if not msg:
+    break 
+
+  send_msg = input(">>  ")
+  client_socket.sendall(send_msg.encode())
+  if msg == 'end':
+    break
+
+client_socket.close()
+s.close()
