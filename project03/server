@@ -1,0 +1,84 @@
+import requests
+from bs4 import BeautifulSoup
+import socket
+import random
+
+
+#크롤링 함수
+def make_sords():
+   WORDS =[]
+   url ="https://ko.wiktionary.org/wiki/%EB%B6%80%EB%A1%9D:%EC%9E%90%EC%A3%BC_%EC%93%B0%EC%9D%B4%EB%8A%94_%ED%95%9C%EA%B5%AD%EC%96%B4_%EB%82%B1%EB%A7%90_5800"
+   r = requests.get(url)
+   bs = BeautifulSoup(r.text,"lxml")
+   table = bs.select_one("table.prettytable")
+   dds = table.select("tr> td> dl>dd")
+   for dd in dds:
+      txt = dd.text.replace(" ", "").strip()
+      if len(txt) >1:
+         WORDS.append(txt)
+   return list(set(WORDS))
+
+#저장함수
+def save_words(words, filename="words.txt"):
+   with open("words.txt","w",encoding="utf-8") as f:
+      for word in words:
+         f.write(word+"\n")
+
+ #파일 불러오는 함수        
+def load_words(filename="words.txt"):
+    WORDS = []
+    try:
+        with open(filename, "r", encoding="utf-8") as file:
+            for w in file:
+                WORDS.append(w.strip())
+    except:
+        pass
+    return WORDS
+
+w_list = make_sords()
+save_words(w_list)
+w_list= load_words()
+user_words=[]
+
+#시작 단어 램덤 함수
+def start_word():
+  return random.choice(w_list)
+
+#클라이언트가 보낸는는 첫 단어 기반, 다음 단어 찾는 함수
+def next_check(last_character):
+    for word in w_list:
+        if word[0] == last_character and word not in user_words:
+            return word
+    return None
+
+s= socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
+s.bind(('localhost', 3033))
+s.listen(1) 
+print("클라이언트 기다리는 중...")
+client_socket, addr = s.accept() 
+print("연결된 클라이언트 : ",addr)
+client_socket.sendall("끝말잇기 게임을 시작합니다.(종료:exit)".encode())
+
+start= start_word()
+client_socket.sendall(start.encode())
+user_words.append(start)
+
+while True:
+  data = client_socket.recv(1024).decode()
+  print("받은 메시지>> ",data)
+
+  user_words.append(data)
+  last_char = data[-1]
+  next_word = next_check(last_char)
+
+  if not next_word or not data :
+    client_socket.sendall("게임종료".encode())
+    break
+
+  user_words.append(next_word)
+  print("보낸 메시지>> ",next_word)
+  client_socket.sendall(next_word.encode())
+
+
+client_socket.close()
+s.close()
