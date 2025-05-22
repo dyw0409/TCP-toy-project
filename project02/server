@@ -1,0 +1,28 @@
+import socket
+
+
+s= socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
+s.bind(('localhost', 3033))
+s.listen(1) 
+print("클라이언트 기다리는 중...")
+
+
+client_socket, addr = s.accept() 
+print("연결된 클라이언트 : ",addr)
+
+
+client_socket.sendall("출석석체크시작합니다".encode())
+
+data = client_socket.recv(1024).decode()
+id, name, time = data.split(",")
+
+print("학번 : ", id)
+print("이름 : ", name)
+print("출석시간 : ", time)
+
+
+client_socket.sendall("출석체크가 완료되었습니다".encode())
+
+
+client_socket.close()
+s.close()
